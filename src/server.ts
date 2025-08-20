@@ -1,13 +1,17 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import client = require("./generated/prisma/client");
+
 
 const port = 3000;
 const app = express();
-const prisma = new PrismaClient();
+const prisma = new client.PrismaClient();
 
-app.get("/movies", async (_, res) => {
-   const movies = await prisma.movie.findMany();
-   res.json(movies);
+app.get('/movies', async (_, res) => {
+ const movies = await prisma.movie.findMany({
+   orderBy: { title: 'asc' },
+   include: { genres: true, languages: true },
+ });
+ res.json(movies);
 });
 
 app.listen(port, () => {
